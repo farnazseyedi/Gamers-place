@@ -1,5 +1,9 @@
 import { rawgFetch } from "../lib/api/rawg";
-import type { Game, GamesResponse } from "../types/GamesResponse";
+import type {
+  Game,
+  GamesResponse,
+  GenresResponse,
+} from "../types/GamesResponse";
 
 export const getGames = (
   filters: Record<string, string>,
@@ -7,14 +11,14 @@ export const getGames = (
   rawgFetch({
     endpoint: "/games",
     params: filters,
-  }) as Promise<GamesResponse>;
+  });
 
 export const getGameById = (id: string): Promise<Game> =>
   rawgFetch({
     endpoint: `/games/${id}`,
-  }) as Promise<Game>;
+  });
 
-export const getGenres = () =>
+export const getGenres = (): Promise<GenresResponse> =>
   rawgFetch({
     endpoint: "/genres",
   });
