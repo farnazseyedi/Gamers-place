@@ -1,18 +1,38 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getGames } from "../servises/game";
 import type { Game, GamesResponse } from "../types/GamesResponse";
 import Link from "next/link";
-import Image from "next/image";
+import GameCard from "../components/GameCard";
+import { useState } from "react";
+import { usePage } from "./layout";
+
+function GameCardSkeleton({ index }: { index: number }) {
+  return (
+    <div
+      className="block bg-white rounded-xl shadow overflow-hidden animate-pulse"
+      style={{ animationDelay: `${index * 80}ms` }}
+    >
+      <div className="w-full h-40 bg-gray-200"></div>
+      <div className="p-3 space-y-2">
+        <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+        <div className="flex gap-1">
+          <div className="h-4 w-12 bg-indigo-100 rounded-full"></div>
+          <div className="h-4 w-16 bg-indigo-100 rounded-full"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function GamesPage() {
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [input, setInput] = useState("");
   const [sort, setSort] = useState("");
   const [genre, setGenre] = useState<string | null>(null);
+
+  const { page, setPage } = usePage();
 
   const { data: defaultData, isLoading: defaultLoading } =
     useQuery<GamesResponse>({
@@ -33,7 +53,7 @@ export default function GamesPage() {
     useQuery<GamesResponse>({
       queryKey: ["games", page, search, sort, genre],
       queryFn: () => getGames(apiParams),
-      enabled: true,
+      enabled: page !== null,
       staleTime: 1000 * 60 * 5,
       placeholderData: defaultData,
     });
@@ -45,6 +65,8 @@ export default function GamesPage() {
     setPage(1);
     setSearch(input);
   };
+
+  if (page === null) return null;
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -90,37 +112,37 @@ export default function GamesPage() {
         </select>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-        {isLoading &&
-          Array.from({ length: 10 }).map((_, idx) => (
-            <div key={idx} className="bg-gray-100 rounded h-40 animate-pulse" />
-          ))}
+      <div className="mb-6">
+        <Link
+          href="/FavoriteGamesPage"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Create a list of your favorite games
+        </Link>
+      </div>
 
-        {!isLoading &&
-          displayData?.results.map((game: Game) => (
-            <Link
-              key={game.id}
-              href={`/games/${game.id}`}
-              className="bg-white rounded shadow hover:shadow-xl"
-            >
-              {game.background_image && (
-                <Image
-                  src={game.background_image}
-                  alt={game.name}
-                  width={300}
-                  height={200}
-                  className="w-full h-40 object-cover rounded-t"
-                  unoptimized
-                />
-              )}
-              <div className="p-3 text-center font-semibold">{game.name}</div>
-            </Link>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+        {(isLoading && page === 1) || !displayData?.results?.length
+          ? Array.from({ length: 10 }).map((_, idx) => (
+              <GameCardSkeleton key={idx} index={idx} />
+            ))
+          : (displayData?.results || []).map((game: Game, index: number) => (
+              <GameCard key={game.id} game={game} index={index} />
+            ))}
+
+        {isLoading &&
+          page > 1 &&
+          Array.from({ length: 10 }).map((_, idx) => (
+            <GameCardSkeleton
+              key={`skeleton-page-${page}-${idx}`}
+              index={idx}
+            />
           ))}
       </div>
 
       <div className="flex justify-center gap-4 mt-8">
         <button
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          onClick={() => setPage(Math.max(1, page - 1))}
           disabled={page === 1}
           className="border px-4 py-2 rounded"
         >
@@ -128,7 +150,7 @@ export default function GamesPage() {
         </button>
         <span className="font-bold">{page}</span>
         <button
-          onClick={() => setPage((p) => p + 1)}
+          onClick={() => setPage(page + 1)}
           disabled={!displayData?.next}
           className="border px-4 py-2 rounded"
         >
