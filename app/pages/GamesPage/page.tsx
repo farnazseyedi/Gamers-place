@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import GameCard from "../components/GamePage/GameCard";
-import { GameCardSkeleton } from "../components/GamePage/GameCardSkeleton";
-import { useGames } from "../lib/hook/useGames";
-import { SearchBar } from "../components/GamePage/SearchBar";
-import { Filters } from "../components/GamePage/Filters";
-import { Pagination } from "../components/GamePage/Pagination";
+import GameCard from "../../components/GamePage/GameCard";
+import { GameCardSkeleton } from "../../components/GamePage/GameCardSkeleton";
+import { useGames } from "../../lib/hook/useGames";
+import { SearchBar } from "../../components/GamePage/SearchBar";
+import { Filters } from "../../components/GamePage/Filters";
+import { Pagination } from "../../components/GamePage/Pagination";
 import { usePage } from "./layout";
 
 export default function GamesPage() {
@@ -44,7 +44,7 @@ export default function GamesPage() {
 
       <div className="mb-6">
         <Link
-          href="/FavoriteGamesPage"
+          href="/pages/FavoriteGamesPage"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Create a list of your favorite games
