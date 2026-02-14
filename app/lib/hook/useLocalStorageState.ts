@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 export function useLocalStorageState<T>(key: string, defaultValue: T) {
   const [state, setState] = useState<T>(defaultValue);
@@ -9,7 +9,6 @@ export function useLocalStorageState<T>(key: string, defaultValue: T) {
       const stored = localStorage.getItem(key);
       if (stored) setState(JSON.parse(stored));
     } catch {}
-
     setHydrated(true);
   }, [key]);
 

@@ -9,6 +9,7 @@ export interface Platform {
     name: string;
   };
 }
+
 export interface Game {
   id: number;
   name: string;

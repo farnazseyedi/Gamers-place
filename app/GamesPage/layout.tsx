@@ -8,14 +8,8 @@ import {
   useContext,
 } from "react";
 
-type GamesLayoutProps = {
-  children: ReactNode;
-};
-
-type PageContextType = {
-  page: number;
-  setPage: (p: number) => void;
-};
+type GamesLayoutProps = { children: ReactNode };
+type PageContextType = { page: number; setPage: (p: number) => void };
 
 const PageContext = createContext<PageContextType | null>(null);
 
@@ -27,13 +21,13 @@ export function usePage() {
 
 export default function GamesLayout({ children }: GamesLayoutProps) {
   const [page, setPageState] = useState<number | null>(null);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (page === null) {
-      const saved = localStorage.getItem("gamesPage");
-      setPageState(saved ? Number(saved) : 1);
-    }
-  }, [page]);
+    const saved = localStorage.getItem("gamesPage");
+    setPageState(saved ? Number(saved) : 1);
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (page !== null) localStorage.setItem("gamesPage", page.toString());
@@ -43,7 +37,7 @@ export default function GamesLayout({ children }: GamesLayoutProps) {
     if (page !== null) window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  if (page === null) return null;
+  if (!hydrated || page === null) return null;
 
   const setPage = (p: number) => setPageState(p);
 

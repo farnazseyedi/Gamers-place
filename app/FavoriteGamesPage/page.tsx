@@ -2,15 +2,16 @@
 
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Virtuoso } from "react-virtuoso";
 import { useRouter } from "next/navigation";
 
-import GameCard from "../components/GameCard";
-import { GameCardSkeleton } from "../components/GameCardSkeleton";
 import { useGamesDropdown } from "../lib/hook/useGamesDropdown";
+import { GamesDropdownHeader } from "../components/GamesDropdownHeader";
+import { GameDropdownItem } from "../components/GameDropdownItem";
+import { GamesGrid } from "../components/GamesGrid";
 
-export default function GamesDropdown() {
+export default function FavoriteGamesPage() {
   const router = useRouter();
 
   const {
@@ -30,9 +31,7 @@ export default function GamesDropdown() {
     hydrated,
   } = useGamesDropdown();
 
-  if (!hydrated) {
-    return <div className="p-4">Loading...</div>;
-  }
+  if (!hydrated) return <div className="p-4">Loading...</div>;
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
@@ -42,8 +41,11 @@ export default function GamesDropdown() {
       >
         ← Back
       </button>
+
       <div>
-        <h2 className=" font-bold">Scroll to see all the games we have. :)</h2>
+        <h2 className="font-bold mt-4">
+          Scroll to see all the games we have :)
+        </h2>
       </div>
 
       <Listbox value={selected} onChange={setSelected} multiple>
@@ -54,7 +56,6 @@ export default function GamesDropdown() {
                 ? "Select your favorite games"
                 : `${selected.length} selected`}
             </span>
-
             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
               <ChevronUpDownIcon className="h-5 w-5 text-gray-400" />
             </span>
@@ -67,106 +68,35 @@ export default function GamesDropdown() {
             leaveTo="opacity-0"
           >
             <Listbox.Options className="absolute z-50 mt-1 w-full max-h-125 overflow-auto rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              <div className="sticky top-0 z-10 bg-white border-b border-gray-200 flex flex-col gap-1 p-2">
-                <input
-                  type="text"
-                  placeholder="Search games..."
-                  onChange={(e) => setSearchDebounced(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-
-                <div className="flex justify-between text-sm font-medium text-indigo-600">
-                  <span
-                    onClick={selectAll}
-                    className="hover:underline cursor-pointer"
-                  >
-                    Select All
-                  </span>
-
-                  <span
-                    onClick={clearAll}
-                    className="hover:underline cursor-pointer"
-                  >
-                    Clear All
-                  </span>
-                </div>
-              </div>
-
-              {loading && (
-                <div className="p-4 mt-4 text-center text-gray-500">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 justify-items-center gap-4">
-                    {Array.from({ length: 9 }).map((_, idx) => (
-                      <GameCardSkeleton key={idx} index={idx} />
-                    ))}
-                  </div>
-                </div>
-              )}
+              <GamesDropdownHeader
+                searchValue={""}
+                onSearchChange={setSearchDebounced}
+                onSelectAll={selectAll}
+                onClearAll={clearAll}
+              />
 
               {!loading && (
                 <Virtuoso
                   style={{ height: 350 }}
                   data={items}
                   endReached={() => {
-                    if (hasMore && !loadingMore) {
-                      setPage(page + 1);
-                    }
+                    if (hasMore && !loadingMore) setPage(page + 1);
                   }}
-                  itemContent={(index, item) => {
-                    if (item.type === "genre") {
-                      return (
-                        <div className="px-3 py-1 font-bold uppercase text-sm text-white rounded-lg mb-1 shadow-md sticky top-0 bg-linear-to-r from-indigo-500 to-purple-500">
-                          {item.label}
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <Listbox.Option
-                        key={item.label}
-                        value={item.label}
-                        as={Fragment}
-                      >
-                        {({ active, selected: isSelected }) => (
-                          <li
-                            className={`cursor-pointer select-none relative py-2 pl-10 pr-4 rounded-lg mb-1 transition ${
-                              active
-                                ? "bg-indigo-100 text-indigo-900"
-                                : "text-gray-900"
-                            }`}
-                            onClick={() => toggleGame(item.label)}
-                          >
-                            <span
-                              className={`block truncate ${
-                                isSelected ? "font-semibold" : "font-normal"
-                              }`}
-                            >
-                              {item.label}
-                            </span>
-
-                            {item.game?.genres.length > 0 && (
-                              <div className="absolute right-3 top-2 flex space-x-1">
-                                {item.game.genres.map((g) => (
-                                  <span
-                                    key={g.id}
-                                    className="bg-indigo-100 text-indigo-800 text-xs px-1 rounded"
-                                  >
-                                    {g.name}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-
-                            {isSelected && (
-                              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-indigo-600">
-                                <CheckIcon className="h-5 w-5" />
-                              </span>
-                            )}
-                          </li>
-                        )}
-                      </Listbox.Option>
-                    );
-                  }}
+                  itemContent={(index, item) => (
+                    <GameDropdownItem
+                      item={item}
+                      isSelected={selected.includes(item.label)}
+                      isActive={false}
+                      onToggle={() => toggleGame(item.label)}
+                    />
+                  )}
                 />
+              )}
+
+              {loading && (
+                <div className="p-4 mt-4 text-center text-gray-500">
+                  Loading games...
+                </div>
               )}
             </Listbox.Options>
           </Transition>
@@ -175,26 +105,7 @@ export default function GamesDropdown() {
 
       {selected.length > 0 && (
         <div className="mt-6">
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 justify-items-center gap-4">
-              {Array.from({ length: 9 }).map((_, idx) => (
-                <GameCardSkeleton key={idx} index={idx} />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 justify-items-center gap-4">
-              {games
-                .filter((g) => selected.includes(g.name))
-                .map((game, idx) => (
-                  <div
-                    key={`${game.id}-${idx}`}
-                    className="w-65 bg-white rounded-xl shadow-md overflow-hidden"
-                  >
-                    <GameCard game={game} index={idx} />
-                  </div>
-                ))}
-            </div>
-          )}
+          <GamesGrid games={games} selectedNames={selected} loading={loading} />
         </div>
       )}
     </div>

@@ -5,7 +5,6 @@ import { useLocalStorageState } from "./useLocalStorageState";
 
 function debounce<T extends (...args: never[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
-
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
@@ -18,7 +17,6 @@ export function useGamesDropdown() {
     "selectedGames",
     [],
   );
-
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -28,12 +26,10 @@ export function useGamesDropdown() {
   const fetchGames = async (pageNumber: number) => {
     try {
       if (pageNumber > 1) setLoadingMore(true);
-
       const data = await rawgFetch<GamesResponse>({
         endpoint: "/games",
         params: { page: pageNumber, page_size: 40 },
       });
-
       setGames((prev) => [...prev, ...data.results]);
       setHasMore(Boolean(data.next));
     } catch (err) {
@@ -61,7 +57,6 @@ export function useGamesDropdown() {
 
   const items = useMemo(() => {
     const grouped: Record<string, Game[]> = {};
-
     filteredGames.forEach((game) => {
       game.genres.forEach((genre) => {
         if (!grouped[genre.name]) grouped[genre.name] = [];
@@ -71,11 +66,7 @@ export function useGamesDropdown() {
 
     return Object.entries(grouped).flatMap(([genre, games]) => [
       { type: "genre" as const, label: genre },
-      ...games.map((g) => ({
-        type: "game" as const,
-        label: g.name,
-        game: g,
-      })),
+      ...games.map((g) => ({ type: "game" as const, label: g.name, game: g })),
     ]);
   }, [filteredGames]);
 
