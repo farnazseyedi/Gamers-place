@@ -4,9 +4,9 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Virtuoso } from "react-virtuoso";
 import { useRouter } from "next/navigation";
-import GameCard from "../components/GameCard";
-import { GameCardSkeleton } from "../components/GameCardSkeleton";
-import { useGamesDropdown } from "../lib/hook/useGamesDropdown";
+import GameCard from "../../components/GamePage/GameCard";
+import { GameCardSkeleton } from "../GamePage/GameCardSkeleton";
+import { useGamesDropdown } from "../../lib/hook/useGamesDropdown";
 
 export default function GameListDropdown() {
   const router = useRouter();

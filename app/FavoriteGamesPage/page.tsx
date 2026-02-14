@@ -7,9 +7,9 @@ import { Virtuoso } from "react-virtuoso";
 import { useRouter } from "next/navigation";
 
 import { useGamesDropdown } from "../lib/hook/useGamesDropdown";
-import { GamesDropdownHeader } from "../components/GamesDropdownHeader";
-import { GameDropdownItem } from "../components/GameDropdownItem";
-import { GamesGrid } from "../components/GamesGrid";
+import { GamesDropdownHeader } from "../components/FavoriteGamesPage/GamesDropdownHeader";
+import { GameDropdownItem } from "../components/FavoriteGamesPage/GameDropdownItem";
+import { GamesGrid } from "../components/FavoriteGamesPage/GamesGrid";
 
 export default function FavoriteGamesPage() {
   const router = useRouter();

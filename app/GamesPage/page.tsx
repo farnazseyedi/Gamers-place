@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import GameCard from "../components/GameCard";
-import { GameCardSkeleton } from "../components/GameCardSkeleton";
+import GameCard from "../components/GamePage/GameCard";
+import { GameCardSkeleton } from "../components/GamePage/GameCardSkeleton";
 import { useGames } from "../lib/hook/useGames";
-import { SearchBar } from "../components/SearchBar";
-import { Filters } from "../components/Filters";
-import { Pagination } from "../components/Pagination";
+import { SearchBar } from "../components/GamePage/SearchBar";
+import { Filters } from "../components/GamePage/Filters";
+import { Pagination } from "../components/GamePage/Pagination";
 import { usePage } from "./layout";
 
 export default function GamesPage() {

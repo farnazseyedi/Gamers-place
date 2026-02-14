@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import type { Game } from "../types/GamesResponse";
+import type { Game } from "../../types/GamesResponse";
 
 interface GameCardProps {
   game: Game;

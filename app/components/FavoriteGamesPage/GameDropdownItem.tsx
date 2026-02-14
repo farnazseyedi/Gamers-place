@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Listbox } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import type { Game } from "../types/GamesResponse";
+import type { Game } from "../../types/GamesResponse";
 
 type ItemProps = {
   item: { type: "genre" | "game"; label: string; game?: Game };

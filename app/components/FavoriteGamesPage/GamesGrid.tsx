@@ -1,6 +1,6 @@
-import GameCard from "./GameCard";
-import { GameCardSkeleton } from "./GameCardSkeleton";
-import type { Game } from "../types/GamesResponse";
+import GameCard from "../GamePage/GameCard";
+import { GameCardSkeleton } from "../GamePage/GameCardSkeleton";
+import type { Game } from "../../types/GamesResponse";
 
 type GridProps = {
   games: Game[];
