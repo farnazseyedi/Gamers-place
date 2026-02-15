@@ -2,15 +2,11 @@
 
 import {
   ReactNode,
-  useEffect,
-  useState,
   createContext,
   useContext,
+  useEffect,
+  useState,
 } from "react";
-
-type GamesLayoutProps = {
-  children: ReactNode;
-};
 
 type PageContextType = {
   page: number;
@@ -21,29 +17,37 @@ const PageContext = createContext<PageContextType | null>(null);
 
 export function usePage() {
   const ctx = useContext(PageContext);
-  if (!ctx) throw new Error("usePage must be used within GamesLayout");
+  if (!ctx) {
+    throw new Error("usePage must be used inside <PageProvider>");
+  }
   return ctx;
 }
 
-export default function GamesLayout({ children }: GamesLayoutProps) {
+export function PageProvider({ children }: { children: ReactNode }) {
   const [page, setPageState] = useState<number | null>(null);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (page === null) {
-      const saved = localStorage.getItem("gamesPage");
-      setPageState(saved ? Number(saved) : 1);
+    const saved = localStorage.getItem("gamesPage");
+    setPageState(saved ? Number(saved) : 1);
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (page !== null) {
+      localStorage.setItem("gamesPage", page.toString());
     }
   }, [page]);
 
   useEffect(() => {
-    if (page !== null) localStorage.setItem("gamesPage", page.toString());
+    if (page !== null) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }, [page]);
 
-  useEffect(() => {
-    if (page !== null) window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [page]);
-
-  if (page === null) return null;
+  if (!hydrated || page === null) {
+    return null;
+  }
 
   const setPage = (p: number) => setPageState(p);
 

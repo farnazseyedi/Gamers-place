@@ -1,6 +1,8 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers/query-provider";
+import { PageProvider } from "../context/PageContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <PageProvider>{children}</PageProvider>
+        </Providers>
       </body>
     </html>
   );

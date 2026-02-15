@@ -5,7 +5,6 @@ import { useLocalStorageState } from "./useLocalStorageState";
 
 function debounce<T extends (...args: never[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
-
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
@@ -18,23 +17,26 @@ export function useGamesDropdown() {
     "selectedGames",
     [],
   );
-
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchGames = async (pageNumber: number) => {
+  const fetchGames = async (pageNumber: number, reset = false) => {
     try {
-      if (pageNumber > 1) setLoadingMore(true);
+      if (pageNumber > 1 && !reset) setLoadingMore(true);
+      else setLoading(true);
 
       const data = await rawgFetch<GamesResponse>({
         endpoint: "/games",
         params: { page: pageNumber, page_size: 40 },
       });
 
-      setGames((prev) => [...prev, ...data.results]);
+      setGames((prev) =>
+        reset || pageNumber === 1 ? data.results : [...prev, ...data.results],
+      );
+
       setHasMore(Boolean(data.next));
     } catch (err) {
       console.error(err);
@@ -47,6 +49,12 @@ export function useGamesDropdown() {
   useEffect(() => {
     fetchGames(page);
   }, [page]);
+
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    fetchGames(1, true);
+  }, [search]);
 
   const setSearchDebounced = useMemo(
     () => debounce((value: string) => setSearch(value), 300),
@@ -61,7 +69,6 @@ export function useGamesDropdown() {
 
   const items = useMemo(() => {
     const grouped: Record<string, Game[]> = {};
-
     filteredGames.forEach((game) => {
       game.genres.forEach((genre) => {
         if (!grouped[genre.name]) grouped[genre.name] = [];
