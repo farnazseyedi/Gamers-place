@@ -49,7 +49,7 @@ export default function GamesPage() {
             href="/pages/FavoriteGamesPage"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            Create a list of your favorite games
+            your favorite games
           </Link>
         </div>
       </div>
