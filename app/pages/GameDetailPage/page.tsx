@@ -1,10 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getGameById } from "../servises/game";
+import { getGameById } from "../../servises/game";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import type { Game } from "../types/GamesResponse";
+import type { Game } from "../../types/GamesResponse";
 import { useRouter } from "next/navigation";
 
 export default function GameDetailPage() {

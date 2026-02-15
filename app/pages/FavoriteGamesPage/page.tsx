@@ -13,11 +13,11 @@ import { GamesGrid } from "../../components/FavoriteGamesPage/GamesGrid";
 
 export default function FavoriteGamesPage() {
   const router = useRouter();
-
   const {
     games,
     selected,
     setSelected,
+    search,
     setSearchDebounced,
     items,
     toggleGame,
@@ -25,13 +25,14 @@ export default function FavoriteGamesPage() {
     clearAll,
     loading,
     loadingMore,
-    page,
     setPage,
     hasMore,
     hydrated,
   } = useGamesDropdown();
 
-  if (!hydrated) return <div className="p-4">Loading...</div>;
+  const isClient = typeof window !== "undefined";
+
+  if (!hydrated || !isClient) return <div className="p-4">Loading...</div>;
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
@@ -69,7 +70,7 @@ export default function FavoriteGamesPage() {
           >
             <Listbox.Options className="absolute z-50 mt-1 w-full max-h-125 overflow-auto rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               <GamesDropdownHeader
-                searchValue={""}
+                searchValue={search}
                 onSearchChange={setSearchDebounced}
                 onSelectAll={selectAll}
                 onClearAll={clearAll}
@@ -80,7 +81,7 @@ export default function FavoriteGamesPage() {
                   style={{ height: 350 }}
                   data={items}
                   endReached={() => {
-                    if (hasMore && !loadingMore) setPage(page + 1);
+                    if (hasMore && !loadingMore) setPage((p) => p + 1);
                   }}
                   itemContent={(index, item) => (
                     <GameDropdownItem

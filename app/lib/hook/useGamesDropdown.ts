@@ -23,14 +23,20 @@ export function useGamesDropdown() {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchGames = async (pageNumber: number) => {
+  const fetchGames = async (pageNumber: number, reset = false) => {
     try {
-      if (pageNumber > 1) setLoadingMore(true);
+      if (pageNumber > 1 && !reset) setLoadingMore(true);
+      else setLoading(true);
+
       const data = await rawgFetch<GamesResponse>({
         endpoint: "/games",
         params: { page: pageNumber, page_size: 40 },
       });
-      setGames((prev) => [...prev, ...data.results]);
+
+      setGames((prev) =>
+        reset || pageNumber === 1 ? data.results : [...prev, ...data.results],
+      );
+
       setHasMore(Boolean(data.next));
     } catch (err) {
       console.error(err);
@@ -43,6 +49,12 @@ export function useGamesDropdown() {
   useEffect(() => {
     fetchGames(page);
   }, [page]);
+
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    fetchGames(1, true);
+  }, [search]);
 
   const setSearchDebounced = useMemo(
     () => debounce((value: string) => setSearch(value), 300),
@@ -66,7 +78,11 @@ export function useGamesDropdown() {
 
     return Object.entries(grouped).flatMap(([genre, games]) => [
       { type: "genre" as const, label: genre },
-      ...games.map((g) => ({ type: "game" as const, label: g.name, game: g })),
+      ...games.map((g) => ({
+        type: "game" as const,
+        label: g.name,
+        game: g,
+      })),
     ]);
   }, [filteredGames]);
 

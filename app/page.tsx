@@ -1,33 +1,70 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
+import Link from "next/link";
+import GameCard from "./components/GamePage/GameCard";
+import { GameCardSkeleton } from "./components/GamePage/GameCardSkeleton";
+import { useGames } from "./lib/hook/useGames";
+import { SearchBar } from "./components/GamePage/SearchBar";
+import { Filters } from "./components/GamePage/Filters";
+import { Pagination } from "./components/GamePage/Pagination";
+import { usePage } from "../context/PageContext";
 
-const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+export default function GamesPage() {
+  const [input, setInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("");
+  const [genre, setGenre] = useState<string | null>(null);
 
-interface TestResponse {
-  status: string;
-  method: string;
-}
+  const { page, setPage } = usePage();
 
-export default function Home() {
-  useEffect(() => {
-    const results: Record<string, TestResponse | { error: string }> = {};
+  const { data, isLoading } = useGames({ page, search, sort, genre });
 
-    Promise.all(
-      methods.map((method) =>
-        fetch("https://dummyjson.com/test", { method })
-          .then((res) => res.json())
-          .then((data) => {
-            results[method] = data;
-          })
-          .catch((err) => {
-            results[method] = { error: err.message };
-          }),
-      ),
-    ).then(() => {
-      console.log("All results:", results);
-    });
-  }, []);
+  if (page === null) return null;
 
-  return <div>salam</div>;
+  return (
+    <div className="p-6 max-w-7xl mx-auto">
+      <SearchBar
+        input={input}
+        onInputChange={setInput}
+        onSearch={() => {
+          setPage(1);
+          setSearch(input);
+        }}
+      />
+      <Filters
+        sort={sort}
+        genre={genre}
+        onSortChange={(value) => {
+          setPage(1);
+          setSort(value);
+        }}
+        onGenreChange={setGenre}
+      />
+
+      <div className="mb-6 gap-2 flex">
+        <div>Task 3 :</div>
+        <div>
+          <Link
+            href="/pages/FavoriteGamesPage"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Create a list of your favorite games
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+        {(isLoading && page === 1) || !data?.results?.length
+          ? Array.from({ length: 10 }).map((_, idx) => (
+              <GameCardSkeleton key={idx} index={idx} />
+            ))
+          : data.results.map((game, idx) => (
+              <GameCard key={game.id} game={game} index={idx} />
+            ))}
+      </div>
+
+      <Pagination page={page} setPage={setPage} hasNext={!!data?.next} />
+    </div>
+  );
 }
