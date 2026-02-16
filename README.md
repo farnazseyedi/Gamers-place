@@ -4,7 +4,7 @@ GitHub: https://github.com/farnazseyedi/Gamers-place
 # 🚀 Gamers-place
 
 A modern dashboard application built with **Next.js, TypeScript, and TailwindCSS** using **SOLID principles** and clean architecture.  
-The project consumes the RAWG API to manage product data.
+The project consumes the RAWG API to manage product data.((pls use VPN))
 
 ---
 
@@ -143,7 +143,7 @@ npm run dev
 ```
 
 App runs on:
-(pls use VPN)
+
 ```
 http://localhost:3000
 ```
