@@ -143,7 +143,7 @@ npm run dev
 ```
 
 App runs on:
-
+(pls use VPN)
 ```
 http://localhost:3000
 ```
